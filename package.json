@@ -10,8 +10,27 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@mantine/carousel": "^6.0.14",
+    "@mantine/core": "^6.0.14",
+    "@mantine/dates": "^6.0.14",
+    "@mantine/dropzone": "^6.0.14",
+    "@mantine/form": "^6.0.14",
+    "@mantine/hooks": "^6.0.14",
+    "@reduxjs/toolkit": "^1.9.5",
+    "@stripe/react-stripe-js": "^2.1.1",
+    "@stripe/stripe-js": "^1.54.1",
+    "@tabler/icons-react": "^2.22.0",
+    "dayjs": "^1.11.8",
+    "embla-carousel-react": "^7.1.0",
+    "firebase": "^9.23.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-redux": "^8.1.1",
+    "react-router-dom": "^6.14.0",
+    "recharts": "^2.7.2",
+    "redux-persist": "^6.0.0",
+    "stripe": "^12.10.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.37",
