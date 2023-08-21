@@ -1,35 +1,94 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect } from "react";
+import { Route, Routes } from "react-router-dom";
+import {
+  createUserDocumentFromAuth,
+  onAuthStateChangedListener,
+  getUserDocumentFromAuth,
+  getUserBookings,
+  getAllPackages,
+} from "./utils/firebase";
+import { useDispatch } from "react-redux";
+import { setCurrentUser } from "./store/slices/userSlice";
+import {
+  setAllPacks,
+  setAllBookings,
+  setCurrentUserBookings,
+} from "./store/slices/packsSlice";
 
-function App() {
-  const [count, setCount] = useState(0)
+import NavBar from "./routes/navbar/NavBar";
+import Home from "./routes/home/Home";
+import AllPackages from "./routes/Packages/allPackages/AllPackages";
+import Auth from "./routes/authentication/Auth";
+import ClientBookings from "./routes/Bookings/clientBookings/ClientBookings";
+import MyBookings from "./routes/Bookings/myBookings/MyBookings";
+import Cart from "./routes/cart/Cart";
+import CreatePackage from "./routes/Packages/createPackage/CreatePackage";
+import CustomPackage from "./routes/Packages/customPackage/CustomPackage";
+import ModifyPackage from "./routes/Packages/modifyPackage/ModifyPackage";
+import Checkout from "./routes/Payment/checkout/Checkout";
+import OrderSuccess from "./routes/Payment/orderSuccess/OrderSuccess";
+import RevenueReports from "./routes/revenueReports/RevenueReports";
+
+const App = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChangedListener(async (user) => {
+      if (user) {
+        await createUserDocumentFromAuth(user);
+        const { name, email, userType, id } = await getUserDocumentFromAuth(
+          user
+        );
+        if (userType === "Agent") {
+          const bookings = await getUserBookings();
+          dispatch(setAllBookings(bookings));
+        } else if (userType === "User") {
+          const bookings = await getUserBookings();
+          const currUserBookings = [];
+          bookings.forEach((booking) => {
+            const allBookingItems = Object.values(booking);
+            allBookingItems.map((bookItem) => {
+              if (bookItem.userId === id) currUserBookings.push(bookItem);
+            });
+          });
+          currUserBookings.length !== 0
+            ? dispatch(setCurrentUserBookings(currUserBookings))
+            : "";
+        }
+        dispatch(setCurrentUser({ name, email, userType, id }));
+      } else {
+        dispatch(setCurrentUser(null));
+      }
+    });
+    return unsubscribe;
+  });
+
+  useEffect(() => {
+    const fetchPackages = async () => {
+      const packs = await getAllPackages();
+      dispatch(setAllPacks(packs));
+    };
+    fetchPackages();
+  }, [dispatch]);
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <Routes>
+      <Route path="/" element={<NavBar />}>
+        <Route index element={<Home />} />
+        <Route path="/all-packages" element={<AllPackages />} />
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/create-package" element={<CreatePackage />} />
+        <Route path="/modify-package" element={<ModifyPackage />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/all-bookings" element={<ClientBookings />} />
+        <Route path="/revenue-reports" element={<RevenueReports />} />
+        <Route path="/my-bookings" element={<MyBookings />} />
+        <Route path="/custom-package" element={<CustomPackage />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/order-success" element={<OrderSuccess />} />
+      </Route>
+    </Routes>
+  );
+};
 
-export default App
+export default App;
