@@ -17,14 +17,16 @@ const Checkout = () => {
   const loader = "auto";
 
   useEffect(() => {
-    fetch("http://localhost:5252/stripe-config").then(async (r) => {
-      const { publishableKey } = await r.json();
-      setStripePromise(loadStripe(publishableKey));
-    });
+    fetch("https://travelo-server.onrender.com/stripe-config").then(
+      async (r) => {
+        const { publishableKey } = await r.json();
+        setStripePromise(loadStripe(publishableKey));
+      }
+    );
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:5252/payment-intent", {
+    fetch("https://travelo-server.onrender.com/payment-intent", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ amount: cartTotal * 100 }),
