@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToggle, upperFirst } from "@mantine/hooks";
 import { useForm } from "@mantine/form";
@@ -40,7 +39,6 @@ const AuthenticationForm = (props) => {
       email: (val) => (/^\S+@\S+$/.test(val) ? null : "Invalid email"),
       password: (val) =>
         val.length < 6 ? "Password should include at least 6 characters" : null,
-      // isAgent: (val) => console.log(val),
       isAgent: (val) =>
         val.userType === "agent"
           ? val.pwd === "t#t#Px*8hfgQPX["
