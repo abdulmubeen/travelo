@@ -10,7 +10,7 @@ import {
   Group,
   Button,
   Divider,
-  NativeSelect,
+  Select,
   Anchor,
   Stack,
   Notification,
@@ -26,7 +26,7 @@ import {
 
 const AuthenticationForm = (props) => {
   const navigate = useNavigate();
-  const [value, setValue] = useState("");
+  // const [value, setValue] = useState(null);
   const [type, toggle] = useToggle(["login", "register"]);
   const form = useForm({
     initialValues: {
@@ -40,12 +40,13 @@ const AuthenticationForm = (props) => {
       email: (val) => (/^\S+@\S+$/.test(val) ? null : "Invalid email"),
       password: (val) =>
         val.length < 6 ? "Password should include at least 6 characters" : null,
-      isAgent: (val) => console.log(val),
-      // val.userType === "Agent"
-      //   ? val.pwd === "t#t#Px*8hfgQPX["
-      //     ? null
-      //     : "Error"
-      //   : null,
+      // isAgent: (val) => console.log(val),
+      isAgent: (val) =>
+        val.userType === "agent"
+          ? val.pwd === "t#t#Px*8hfgQPX["
+            ? null
+            : "Error"
+          : null,
     },
   });
 
@@ -158,20 +159,22 @@ const AuthenticationForm = (props) => {
 
           {type === "register" && (
             <>
-              <NativeSelect
+              <Select
                 required
                 withAsterisk
                 label="Select user type"
                 description="If agent, enter secret key as password"
-                value={value}
-                onChange={(event) => {
-                  setValue(event.currentTarget.value);
+                value={form.values.isAgent.userType}
+                onChange={(event) =>
                   form.setFieldValue("isAgent", {
-                    userType: event.currentTarget.value,
+                    userType: event,
                     pwd: form.values.password,
-                  });
-                }}
-                data={["User", "Agent"]}
+                  })
+                }
+                data={[
+                  { value: "user", label: "User" },
+                  { value: "agent", label: "Agent" },
+                ]}
                 error={form.errors.isAgent && "Secret key doesn't match"}
               />
             </>
